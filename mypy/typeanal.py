@@ -302,14 +302,16 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
         if isinstance(left, OpType) and isinstance(right, OpType):
             return OpType(left, right, t.op, t.line)
         elif isinstance(right, OpType):
-            if not left.type.declared_metaclass or left.type.declared_metaclass.type.fullname != 'Units.UnitMeta':
+            if not left.type.bases[-1].type.declared_metaclass or left.type.bases[-1].type.declared_metaclass.type.fullname != 'Units.UnitMeta':
                 self.fail("OpType requires left that is UnitsType", t, code=codes.SYNTAX)
             return OpType(left, right, t.op, t.line)
         elif isinstance(left, OpType):
-            if not right.type.declared_metaclass or right.type.declared_metaclass.type.fullname != 'Units.UnitMeta':
+            if not right.type.bases[-1].type.declared_metaclass or right.type.bases[-1].type.declared_metaclass.type.fullname != 'Units.UnitMeta':
                 self.fail("OpType requires right that is UnitsType", t, code=codes.SYNTAX)
             return OpType(left, right, t.op, t.line)
-        elif not right.type.declared_metaclass or not left.type.declared_metaclass or left.type.declared_metaclass.type.fullname != 'Units.UnitMeta' or right.type.declared_metaclass.type.fullname != 'Units.UnitMeta':
+        elif isinstance(left, AnyType) or isinstance(right, AnyType):
+            self.fail("OpType requires left and right that are UnitsType", t, code=codes.SYNTAX)
+        elif not right.type.bases[-1].type.declared_metaclass or not left.type.bases[-1].type.declared_metaclass or left.type.bases[-1].type.declared_metaclass.type.fullname != 'Units.UnitMeta' or right.type.bases[-1].type.declared_metaclass.type.fullname != 'Units.UnitMeta':
             self.fail("OpType requires left and right that are UnitsType", t, code=codes.SYNTAX)
         return OpType(left, right, t.op, t.line)
 
