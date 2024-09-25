@@ -324,7 +324,7 @@ class TypeAnalyser(SyntheticTypeVisitor[Type], TypeAnalyzerPluginInterface):
         # ):
         #     self.fail("X op Y syntax for unions requires Python 3.10", t, code=codes.SYNTAX)
         base = t.base.accept(self)
-        if base.type.declared_metaclass.type.fullname != 'Units.UnitMeta':
+        if base.type.bases[-1].type.declared_metaclass.type.fullname != 'Units.UnitMeta':
             self.fail("powerType requires left type that is UnitsType", t,
                       code=codes.SYNTAX)
             return AnyType(TypeOfAny.from_error)
